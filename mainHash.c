@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 
-#define SIZE 10
+#define SIZE 127
 
 typedef struct hashStruct
 {
@@ -19,23 +19,32 @@ typedef struct defintionComparison
 
 void startHash(hashSt **hs);
 int hashIndex(char *word);
-int insertDictionary (hashSt **hs, char *word, char *definition);
+void insertDictionary (hashSt **hs, char *word, char *definition);
 defCmp compareDefinition(hashSt **hs, char *word);
 
 
-int main()
+int main(int argc, char const *argv[])
 {
+
     hashSt *hs[SIZE];
     defCmp result_query;
 
     startHash(hs);
 
-    insertDictionary(hs, "Kaio", "Teste de definicao 1");
-    insertDictionary(hs, "Fillipe", "Teste de definicao 2");
-    insertDictionary(hs, "oiaK", "Teste de definicao 3");
-    insertDictionary(hs, "Benjamim", "Teste de definicao 4");
-    insertDictionary(hs, "Benjamim", "Teste de definicao 4");
+    insertDictionary(hs, "Kaio", "Definition test 1");
+    insertDictionary(hs, "Fillipe", "Definition test 2");
+    insertDictionary(hs, "oiaK", "Definition test 3");
+    insertDictionary(hs, "Benjamim", "Definition test 4");
 
+
+    printf("%s\n", compareDefinition(hs, "oiaK").definition);
+    printf("%s\n", compareDefinition(hs, "Carlos").definition);
+    printf("%s\n", compareDefinition(hs, "Fillipe").definition);
+    printf("%s\n", compareDefinition(hs, "Benjamim").definition);
+
+
+
+    
 
 
     return 1;
@@ -45,32 +54,39 @@ void startHash(hashSt **hs)
 {
     int i;
     for(i = 0; i < SIZE; i++)
+    {
         hs[i] = NULL;
+    }
 }
 
 int hashIndex(char *word)
 {
-    int id, i, charQuant = 0, sumAscii = 0;
+    int id, i, charQuant, sumAscii;
+    
+    charQuant = 0;
+    sumAscii = 0;
 
-    for(i = 0; strlen(word); i++)
+    for(i = 0; i < strlen(word); i++)
     {
         charQuant++;
         sumAscii += (int) word[i];
     }
-    id = floor(sumAscii/charQuant);
+    id = floor (sumAscii/charQuant);
 
     return id;
 }
 
-int insertDictionary (hashSt **hs, char *word, char *definition)
+void insertDictionary (hashSt **hs, char *word, char *definition)
 {
     hashSt *new, *aux;
     int id;
 
-    new = (hashSt*) malloc (sizeof(hashSt));
+    new = (hashSt*) malloc (sizeof(hashSt)*1);
     new->word = word;
     new->definition = definition;
     new->next = NULL;
+
+    id = hashIndex(word);
 
     if(hs[id] == NULL)
         hs[id] = new;
@@ -78,11 +94,11 @@ int insertDictionary (hashSt **hs, char *word, char *definition)
     {
         aux = hs[id];
         while(aux->next != NULL)
+        {
             aux = aux->next;
+        }
         aux->next = new;
     }
-
-    return 1;
 }
 
 defCmp compareDefinition(hashSt **hs, char *word)
@@ -100,7 +116,7 @@ defCmp compareDefinition(hashSt **hs, char *word)
     if(aux != NULL)
     {
         while(strcmp(aux->word, word) && (aux->next != NULL))
-            aux->next;
+            aux = aux->next;
         if(!strcmp(word, aux->word))
         {
             result.status = 1;
